@@ -1,3 +1,5 @@
+using System;
+
 namespace Core.Flavor
 {
     /// <summary>
@@ -11,6 +13,7 @@ namespace Core.Flavor
     /// <summary>
     /// basic flavor
     /// </summary>
+    [Serializable]
     public class Basic : IFlavor
     {
 
@@ -19,6 +22,7 @@ namespace Core.Flavor
     /// <summary>
     /// savory flavor
     /// </summary>
+    [Serializable]
     public class Savory : IFlavor
     {
 
@@ -27,6 +31,7 @@ namespace Core.Flavor
     /// <summary>
     /// spicy flavor
     /// </summary>
+    [Serializable]
     public class Spicy : IFlavor
     {
 
@@ -35,6 +40,7 @@ namespace Core.Flavor
     /// <summary>
     /// salty flavor
     /// </summary>
+    [Serializable]
     public class Salty : IFlavor
     {
 
@@ -43,6 +49,7 @@ namespace Core.Flavor
     /// <summary>
     /// sweet flavor
     /// </summary>
+    [Serializable]
     public class Sweet : IFlavor
     {
 
@@ -51,6 +58,7 @@ namespace Core.Flavor
     /// <summary>
     /// bitter flavor
     /// </summary>
+    [Serializable]
     public class Bitter : IFlavor
     {
 
@@ -59,6 +67,7 @@ namespace Core.Flavor
     /// <summary>
     /// minty flavor
     /// </summary>
+    [Serializable]
     public class Minty : IFlavor
     {
 
@@ -67,6 +76,7 @@ namespace Core.Flavor
     /// <summary>
     /// sour flavor
     /// </summary>
+    [Serializable]
     public class Sour : IFlavor
     {
 
@@ -75,6 +85,7 @@ namespace Core.Flavor
     /// <summary>
     /// rotten flavor
     /// </summary>
+    [Serializable]
     public class Rotten : IFlavor
     {
 
