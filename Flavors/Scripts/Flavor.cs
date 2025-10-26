@@ -1,7 +1,16 @@
 using System;
 
-namespace Core.Flavor
+namespace Core.Flavors
 {
+    /// <summary>
+    /// enum for all flavor types
+    /// </summary>
+    [Serializable]
+    public enum Flavor
+    {
+        Basic, Savory, Spicy, Salty, Sweet, Bitter, Minty, Sour, Rotten
+    }
+    
     /// <summary>
     /// interface for a flavor
     /// </summary>

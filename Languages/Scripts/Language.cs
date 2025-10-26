@@ -21,6 +21,9 @@ namespace Core.Languages
     
     public abstract class Language : ScriptableObject
     {
+        [SerializeField] protected AudioClip[] _audio;
+        public abstract AudioClip GetAudio(Sound sound);
+
         public string Translate(string word)
         {
             return string.Join(" ", word.GetSounds().Select(section => string.Join("", section.Select(sound => Translate(sound)))));

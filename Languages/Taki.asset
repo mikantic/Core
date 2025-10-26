@@ -12,3 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6afaeb6316be87e4a922736b4b107664, type: 3}
   m_Name: Taki
   m_EditorClassIdentifier: 
+  _audio:
+  - {fileID: 8300000, guid: ceffe7b0f9b02a240984f1ebc0ca2a7f, type: 3}
+  - {fileID: 8300000, guid: 7771c4066af93e848bd5fa5be124ddff, type: 3}
+  - {fileID: 8300000, guid: 4085e7799393f5d43af857d677ddab15, type: 3}
+  - {fileID: 8300000, guid: a0d03446842b0b549b513e8149bbaf9e, type: 3}
