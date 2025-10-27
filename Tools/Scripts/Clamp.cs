@@ -8,16 +8,16 @@ namespace Core.Tools
         public T Max { get; protected set; }
         public T Min { get; protected set; }
 
-        public Clamp(T max, T min)
+        public Clamp(T min, T max, T value) : base(value)
         {
-            Max = max;
             Min = min;
+            Max = max;
         }
 
         protected override T PreValueChanged(T value)
         {
-            if (value.CompareTo(Max) > 0) value = Max;
-            if (value.CompareTo(Min) < 0) value = Min;
+            if (value.CompareTo(Max) > 0) { value = Max; }
+            if (value.CompareTo(Min) < 0) { value = Min; }
             return base.PreValueChanged(value);
         }
     }

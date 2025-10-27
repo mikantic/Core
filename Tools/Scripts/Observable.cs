@@ -33,6 +33,11 @@ namespace Core.Tools
         {
             OnValueChanged?.Invoke(_value);
         }
+
+        public Observable(T value)
+        {
+            _value = value;
+        }
     }    
 
 }
