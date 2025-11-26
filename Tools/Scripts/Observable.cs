@@ -2,42 +2,60 @@ using System;
 
 namespace Core.Tools
 {
-    [Serializable]
-    public class Observable<T>
+    public class Observable<T> : Property<T>
     {
-        private T _value;
-        public T Value
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="value"></param>
+        public Observable(T value, Ref<T> validation = null) : base(value)
         {
-            get => _value;
-            set
-            {
-                value = PreValueChanged(value);
-                if (_value.Equals(value)) return;
-                _value = value;
-                PostValueChanged();
-            }
+            if (validation != null) ExternalValidation = validation;
         }
 
-        public void SetValue(T value) => Value = value;
+        /// <summary>
+        /// event for externally validating changes
+        /// </summary>
+        public event Ref<T> ExternalValidation;
 
-        public Func<T, T> Validation { get; set; }
-        public event Action<T> OnValueChanged;
+        /// <summary>
+        /// method to interally validate changes
+        /// </summary>
+        /// <param name="value"></param>
+        protected virtual void InternalValidation(ref T value) { }
 
-        protected virtual T PreValueChanged(T value)
+        /// <summary>
+        /// event for value changing
+        /// </summary>
+        public event Action<T> ValueChanged;
+
+        /// <summary>
+        /// response to a change in value internally
+        /// </summary>
+        protected virtual void InternalResponse()
         {
-            if (Validation != null) return Validation(value);
-            return value;
+            ValueChanged?.Invoke(Value);
         }
 
-        protected virtual void PostValueChanged()
+        /// <summary>
+        /// applies validation to value and responses
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected override bool TrySetValue(T value)
         {
-            OnValueChanged?.Invoke(_value);
+            InternalValidation(ref value);
+            ExternalValidation?.Invoke(ref value);
+            if (!base.TrySetValue(value)) return false;
+            InternalResponse();
+            return true;
         }
 
-        public Observable(T value)
-        {
-            _value = value;
-        }
-    }    
+        /// <summary>
+        /// access to value implicitly
+        /// </summary>
+        /// <param name="observable"></param>
+        public static implicit operator T(Observable<T> observable) => observable.Value;
+    }
 
 }
