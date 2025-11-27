@@ -12,8 +12,8 @@ namespace Core.Tools
 
         protected override void InternalValidation(ref T value)
         {
-            ClampToMinValue(Min);
-            ClampToMaxValue(Max);
+            if (value.LessThan(Min)) value = Min;
+            if (value.GreaterThan(Max)) value = Max;
         }
 
         protected virtual void ValidateMin(ref T min)
