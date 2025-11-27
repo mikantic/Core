@@ -2,7 +2,6 @@ using System;
 
 namespace Core.Tools
 {
-    [Serializable]
     public class Property<T>
     {
         /// <summary>

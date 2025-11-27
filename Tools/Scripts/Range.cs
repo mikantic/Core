@@ -1,41 +1,82 @@
 using System;
-using Unity.VisualScripting;
+using UnityEngine;
 
 namespace Core.Tools
 {
     public abstract class Range<T> : Observable<T> where T : IComparable
     {
+        /// <summary>
+        /// minimum value in range
+        /// </summary>
         public Observable<T> Min { get; private set; }
+
+        /// <summary>
+        /// maximum value in range
+        /// </summary>
         public Observable<T> Max { get; private set; }
 
-        public abstract T Lerp { get; }
+        /// <summary>
+        /// implement getting the inverse lerp of the value
+        /// </summary>
+        public abstract T InverseLerp { get; }
 
+        /// <summary>
+        /// implement getting distance from min to max
+        /// </summary>
+        public abstract T Distance { get; }
+
+        /// <summary>
+        /// ensures the new value is range
+        /// </summary>
+        /// <param name="value"></param>
         protected override void InternalValidation(ref T value)
         {
             if (value.LessThan(Min)) value = Min;
             if (value.GreaterThan(Max)) value = Max;
         }
 
+        /// <summary>
+        /// prevents min value being set above max
+        /// </summary>
+        /// <param name="min"></param>
         protected virtual void ValidateMin(ref T min)
         {
             if (min.GreaterThan(Max)) min = Max;
         }
 
+        /// <summary>
+        /// prevents max value being set below min
+        /// </summary>
+        /// <param name="max"></param>
         protected virtual void ValidateMax(ref T max)
         {
             if (max.LessThan(Min)) max = Min;
         }
 
+        /// <summary>
+        /// changes the value to be greater than or equal to min value
+        /// </summary>
+        /// <param name="min"></param>
         protected virtual void ClampToMinValue(T min)
         {
             if (Value.LessThan(min)) Value = Min;
         }
 
+        /// <summary>
+        /// changes the value to be less than or equal to max value
+        /// </summary>
+        /// <param name="max"></param>
         protected virtual void ClampToMaxValue(T max)
         {
             if (Value.GreaterThan(max)) Value = max;
         }
 
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
         public Range(T value, T min, T max) : base(value)
         {
             if (min.GreaterThan(max)) Utils.SwapWith(ref min, ref max);
@@ -64,6 +105,11 @@ namespace Core.Tools
         /// <summary>
         /// lerp percentage
         /// </summary>
-        public override double Lerp => (Value - Min) / (Max - Min);
+        public override double InverseLerp => Value.InverseLerp(Min, Max);
+
+        /// <summary>
+        /// distance from min to max
+        /// </summary>
+        public override double Distance => Max - Min;
     }
 }
