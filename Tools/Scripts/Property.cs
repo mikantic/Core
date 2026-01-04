@@ -1,12 +1,15 @@
 using System;
+using UnityEngine;
 
 namespace Core.Tools
 {
+    [Serializable]
     public class Property<T>
     {
         /// <summary>
         /// backed property
         /// </summary>
+        [SerializeField]
         private T _value;
 
         /// <summary>

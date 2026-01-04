@@ -2,6 +2,7 @@ using System;
 
 namespace Core.Tools
 {
+    [Serializable]
     public class Observable<T> : Property<T>
     {
         /// <summary>
@@ -57,5 +58,4 @@ namespace Core.Tools
         /// <param name="observable"></param>
         public static implicit operator T(Observable<T> observable) => observable.Value;
     }
-
 }

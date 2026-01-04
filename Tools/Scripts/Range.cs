@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Core.Tools
 {
+    [Serializable]
     public abstract class Range<T> : Observable<T> where T : IComparable
     {
         /// <summary>
@@ -89,9 +90,7 @@ namespace Core.Tools
         }
     }
 
-    /// <summary>
-    /// default class uses doubles
-    /// </summary>
+    [Serializable]
     public class Range : Range<double>
     {
         /// <summary>
@@ -111,5 +110,11 @@ namespace Core.Tools
         /// distance from min to max
         /// </summary>
         public override double Distance => Max - Min;
+    }
+
+    [Serializable]
+    public class Range01 : Range
+    {
+        public Range01(double value) : base(value, 0, 1) { }
     }
 }
