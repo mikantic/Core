@@ -58,7 +58,7 @@ namespace Core.Damage
     /// <summary>
     /// anything that can cause damage
     /// </summary>
-    public interface IAttack : IOffense, IFlavor
+    public interface IAttack : IOffense, IFlavors
     {
         /// <summary>
         /// default method of getting offensive stat
@@ -72,28 +72,6 @@ namespace Core.Damage
                 Type.Physical => Punch,
                 Type.Magical => Potency,
                 _ => 0  
-            };
-        }
-
-        /// <summary>
-        /// default method of getting flavor stat
-        /// </summary>
-        /// <param name="flavor"></param>
-        /// <returns></returns>
-        public int GetFlavor(Flavor.Type flavor)
-        {
-            return flavor switch
-            {
-                Flavor.Type.Savory => Savory,
-                Flavor.Type.Spicy => Spicy,
-                Flavor.Type.Salty => Salty,
-                Flavor.Type.Sweet => Sweet,
-                Flavor.Type.Bitter => Bitter,
-                Flavor.Type.Minty => Minty,
-                Flavor.Type.Sour => Sour,
-                Flavor.Type.Rotten => Rotten,
-                // to do: figure out basic scaling
-                _ => 0
             };
         }
     }
