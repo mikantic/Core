@@ -112,9 +112,19 @@ namespace Core.Tools
         public override double Distance => Max - Min;
     }
 
-    [Serializable]
-    public class Range01 : Range
+    /// <summary>
+    /// range from 0 to 1
+    /// </summary>
+    public sealed class Ratio : Range
     {
-        public Range01(double value) : base(value, 0, 1) { }
+        public Ratio(double value) : base(value, 0, 1) { }
+    }
+
+    /// <summary>
+    /// range from 0 to 100
+    /// </summary>
+    public class Meter : Range
+    {
+        public Meter(double value) : base(value, 0, 100) { }
     }
 }

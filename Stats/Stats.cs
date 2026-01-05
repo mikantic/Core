@@ -7,6 +7,11 @@ namespace Core.Stats
         public Magnitude Health { get; }
     }
 
+    public interface IMana
+    {
+        public Magnitude Mana { get; }
+    }
+
     public interface IFlavor
     {
         public Stat Savory { get; }
@@ -29,10 +34,5 @@ namespace Core.Stats
     {
         public double Tolerance { get; }
         public double Toughness { get; }
-    }
-
-    public interface IStats : IOffense, IDefense
-    {
-        
     }
 }

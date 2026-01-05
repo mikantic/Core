@@ -1,4 +1,3 @@
-using Core.Flavors;
 using Core.Stats;
 using Core.Tools;
 
@@ -7,31 +6,13 @@ namespace Core.Damage
     /// <summary>
     /// type of damage linking defense and offense
     /// </summary>
-    public enum Damage
+    public enum Type
     {
         Physical, Magical
     }
 
-    /// <summary>
-    /// anything that can receive damage
-    /// </summary>
-    public interface IDefense : Stats.IDefense, IHealth
+    public interface IArmor
     {
-        /// <summary>
-        /// default method of getting stat to defend with
-        /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public double GetDefense(Damage source)
-        {
-            return source switch
-            {
-                Damage.Physical => Toughness,
-                Damage.Magical => Tolerance,
-                _ => 0  
-            };
-        }
-
         /// <summary>
         /// optional method to get armor value added to defense in damage calc
         /// </summary>
@@ -41,12 +22,34 @@ namespace Core.Damage
             return 5;
         }
 
+    }
+
+    /// <summary>
+    /// anything that can receive damage
+    /// </summary>
+    public interface IDefend : IDefense, IHealth, IArmor
+    {
+        /// <summary>
+        /// default method of getting stat to defend with
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public double GetDefense(Type source)
+        {
+            return source switch
+            {
+                Type.Physical => Toughness,
+                Type.Magical => Tolerance,
+                _ => 0  
+            };
+        }
+
         /// <summary>
         /// modifies health with damage received
         /// </summary>
         /// <param name="damage"></param>
         /// <param name="offense"></param>
-        public void ReceiveDamage(IDamage damage, IOffense offense)
+        public void ReceiveDamage(IDamage damage, IAttack offense)
         {
             Health.Value -= this.CalculateDamage(damage, offense);
         }
@@ -55,19 +58,19 @@ namespace Core.Damage
     /// <summary>
     /// anything that can cause damage
     /// </summary>
-    public interface IOffense : Stats.IOffense, IFlavor
+    public interface IAttack : IOffense, IFlavor
     {
         /// <summary>
         /// default method of getting offensive stat
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public double GetOffense(Damage source)
+        public double GetOffense(Type source)
         {
             return source switch
             {
-                Damage.Physical => Punch,
-                Damage.Magical => Potency,
+                Type.Physical => Punch,
+                Type.Magical => Potency,
                 _ => 0  
             };
         }
@@ -77,18 +80,19 @@ namespace Core.Damage
         /// </summary>
         /// <param name="flavor"></param>
         /// <returns></returns>
-        public int GetFlavor(Flavor flavor)
+        public int GetFlavor(Flavor.Type flavor)
         {
             return flavor switch
             {
-                Flavor.Savory => Savory,
-                Flavor.Spicy => Spicy,
-                Flavor.Salty => Salty,
-                Flavor.Sweet => Sweet,
-                Flavor.Bitter => Bitter,
-                Flavor.Minty => Minty,
-                Flavor.Sour => Sour,
-                Flavor.Rotten => Rotten,
+                Flavor.Type.Savory => Savory,
+                Flavor.Type.Spicy => Spicy,
+                Flavor.Type.Salty => Salty,
+                Flavor.Type.Sweet => Sweet,
+                Flavor.Type.Bitter => Bitter,
+                Flavor.Type.Minty => Minty,
+                Flavor.Type.Sour => Sour,
+                Flavor.Type.Rotten => Rotten,
+                // to do: figure out basic scaling
                 _ => 0
             };
         }
@@ -107,21 +111,44 @@ namespace Core.Damage
         /// <summary>
         /// type of damage
         /// </summary>
-        public Damage Type { get; }
+        public Type Type { get; }
 
         /// <summary>
         /// related flavor
         /// </summary>
-        public Flavor Flavor { get; }
+        public Flavor.Type Flavor { get; }
 
         /// <summary>
         /// scaling with flavor
         /// </summary>
-        public Magnitude Boost { get; }
+        public Magnitude Proficiency { get; }
     }
 
     public static class DamageExtensions
     {
+        /// <summary>
+        /// get proficiency factpr
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="offense"></param>
+        /// <returns></returns>
+        public static double GetBoost(IDamage damage, IAttack offense)
+        {
+            return 1 + offense.GetFlavor(damage.Flavor) * damage.Proficiency;
+        }
+
+        /// <summary>
+        /// get offense defense factor
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="defense"></param>
+        /// <param name="offense"></param>
+        /// <returns></returns>
+        public static double GetModification(Type type, IDefend defense, IAttack offense)
+        {
+            return (1 + offense.GetOffense(type)) / (1 + defense.GetDefense(type) + defense.GetArmor());
+        }
+
         /// <summary>
         /// calculate damage dealt
         /// </summary>
@@ -129,11 +156,9 @@ namespace Core.Damage
         /// <param name="damage"></param>
         /// <param name="offense"></param>
         /// <returns></returns>
-        public static double CalculateDamage(this IDefense defense, IDamage damage, IOffense offense)
+        public static double CalculateDamage(this IDefend defense, IDamage damage, IAttack offense)
         {
-            return damage.Base 
-                * (offense.GetOffense(damage.Type) / (defense.GetDefense(damage.Type) + defense.GetArmor()))
-                * (1 + offense.GetFlavor(damage.Flavor) * damage.Boost);
+            return damage.Base * GetModification(damage.Type, defense, offense) * GetBoost(damage, offense);
         }
 
         /// <summary>
@@ -143,8 +168,8 @@ namespace Core.Damage
         /// <param name="defense"></param>
         /// <param name="offense"></param>
         /// <returns></returns>
-        public static double CalculateDamage(this IDamage damage, IDefense defense, IOffense offense) =>
-            CalculateDamage(defense, damage, offense);
+        public static double CalculateDamage(this IDamage damage, IDefend defense, IAttack offense) =>
+            defense.CalculateDamage(damage, offense);
 
         /// <summary>
         /// extension with offense as this
@@ -153,7 +178,7 @@ namespace Core.Damage
         /// <param name="defense"></param>
         /// <param name="offense"></param>
         /// <returns></returns>
-        public static double CalculateDamage(this IOffense offense, IDefense defense, IDamage damage) =>
-            CalculateDamage(defense, damage, offense);
+        public static double CalculateDamage(this IAttack offense, IDefend defense, IDamage damage) =>
+            defense.CalculateDamage(damage, offense);
     }
 }
