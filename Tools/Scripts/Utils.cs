@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Core.Tools
 {
@@ -45,5 +46,10 @@ namespace Core.Tools
         public static int Floor(this double value) => (int)Math.Floor(value);
 
         #endregion
+
+        public static bool Contains(this LayerMask layerMask, int layer)
+        {
+            return (layerMask.value & (1 << layer)) > 0;
+        }
     }
 }

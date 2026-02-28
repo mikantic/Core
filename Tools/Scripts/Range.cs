@@ -9,12 +9,12 @@ namespace Core.Tools
         /// <summary>
         /// minimum value in range
         /// </summary>
-        public Observable<T> Min { get; private set; }
+        [SerializeField] public Observable<T> Min { get; private set; }
 
         /// <summary>
         /// maximum value in range
         /// </summary>
-        public Observable<T> Max { get; private set; }
+        [SerializeField] public Observable<T> Max { get; private set; }
 
         /// <summary>
         /// implement getting the inverse lerp of the value
@@ -112,10 +112,25 @@ namespace Core.Tools
         public override double Distance => Max - Min;
     }
 
+    public class FloatRange : Range<float>
+    {
+        public FloatRange(float value, float min, float max) : base(value, min, max) {}
+
+        /// <summary>
+        /// lerp percentage
+        /// </summary>
+        public override float InverseLerp => Mathf.InverseLerp(Min, Max, Value);
+
+        /// <summary>
+        /// distance from min to max
+        /// </summary>
+        public override float Distance => Max - Min;
+    }
+
     /// <summary>
     /// range from 0 to 1
     /// </summary>
-    public sealed class Ratio : Range
+    public class Ratio : Range
     {
         public Ratio(double value) : base(value, 0, 1) { }
     }

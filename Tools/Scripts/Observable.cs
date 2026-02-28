@@ -51,11 +51,5 @@ namespace Core.Tools
             InternalResponse();
             return true;
         }
-
-        /// <summary>
-        /// access to value implicitly
-        /// </summary>
-        /// <param name="observable"></param>
-        public static implicit operator T(Observable<T> observable) => observable.Value;
     }
 }

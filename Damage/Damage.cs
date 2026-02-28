@@ -1,162 +1,59 @@
+using System.Collections.Generic;
+using System.Linq;
 using Core.Stats;
 using Core.Tools;
 
 namespace Core.Damage
 {
-    /// <summary>
-    /// type of damage linking defense and offense
-    /// </summary>
     public enum Type
     {
-        Physical, Magical
+        Physical, Magical    
     }
 
-    public interface IArmor
+    public interface IEffect
     {
-        /// <summary>
-        /// optional method to get armor value added to defense in damage calc
-        /// </summary>
-        /// <returns></returns>
-        public double GetArmor()
-        {
-            return 5;
-        }
-
+        public Stat Damage { get; }
+        public Dictionary<Type, Ratio> Weights { get; }
+        public Dictionary<Type, Magnitude> Scaling { get; }
+        public Dictionary<Status.Type, Magnitude> Status { get; }
     }
 
-    /// <summary>
-    /// anything that can receive damage
-    /// </summary>
-    public interface IDefend : IDefense, IHealth, IArmor
+    public static class Math
     {
-        /// <summary>
-        /// default method of getting stat to defend with
-        /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public double GetDefense(Type source)
+        public static double GetDefense(this IDefense defense, Type type)
         {
-            return source switch
+            return type switch
             {
-                Type.Physical => Toughness,
-                Type.Magical => Tolerance,
+                Type.Physical => defense.Toughness,
+                Type.Magical => defense.Tolerance,
                 _ => 0  
             };
         }
 
-        /// <summary>
-        /// modifies health with damage received
-        /// </summary>
-        /// <param name="damage"></param>
-        /// <param name="offense"></param>
-        public void ReceiveDamage(IDamage damage, IAttack offense)
+        public static double GetOffense(this IOffense offense, Type type)
         {
-            Health.Value -= this.CalculateDamage(damage, offense);
-        }
-    }
-
-    /// <summary>
-    /// anything that can cause damage
-    /// </summary>
-    public interface IAttack : IOffense, IFlavors
-    {
-        /// <summary>
-        /// default method of getting offensive stat
-        /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public double GetOffense(Type source)
-        {
-            return source switch
+            return type switch
             {
-                Type.Physical => Punch,
-                Type.Magical => Potency,
+                Type.Physical => offense.Punch,
+                Type.Magical => offense.Potency,
                 _ => 0  
             };
         }
-    }
 
-    /// <summary>
-    /// interface for a damage source
-    /// </summary>
-    public interface IDamage
-    {
-        /// <summary>
-        /// base damage
-        /// </summary>
-        public Stat Base { get; }
-
-        /// <summary>
-        /// type of damage
-        /// </summary>
-        public Type Type { get; }
-
-        /// <summary>
-        /// related flavor
-        /// </summary>
-        public Flavor.Type Flavor { get; }
-
-        /// <summary>
-        /// scaling with flavor
-        /// </summary>
-        public Magnitude Proficiency { get; }
-    }
-
-    public static class DamageExtensions
-    {
-        /// <summary>
-        /// get proficiency factpr
-        /// </summary>
-        /// <param name="damage"></param>
-        /// <param name="offense"></param>
-        /// <returns></returns>
-        public static double GetBoost(IDamage damage, IAttack offense)
+        public static double GetDefense(this IDefense defense, IEffect effect)
         {
-            return 1 + offense.GetFlavor(damage.Flavor) * damage.Proficiency;
+            return effect.Weights.Sum(weight => defense.GetDefense(weight.Key) * weight.Value);
         }
 
-        /// <summary>
-        /// get offense defense factor
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="defense"></param>
-        /// <param name="offense"></param>
-        /// <returns></returns>
-        public static double GetModification(Type type, IDefend defense, IAttack offense)
+        public static double GetOffense(this IOffense offense, IEffect effect)
         {
-            return (1 + offense.GetOffense(type)) / (1 + defense.GetDefense(type) + defense.GetArmor());
+            return effect.Scaling.Sum(scaling => offense.GetOffense(scaling.Key) * scaling.Value);
         }
 
-        /// <summary>
-        /// calculate damage dealt
-        /// </summary>
-        /// <param name="defense"></param>
-        /// <param name="damage"></param>
-        /// <param name="offense"></param>
-        /// <returns></returns>
-        public static double CalculateDamage(this IDefend defense, IDamage damage, IAttack offense)
+        public static double GetDamage(this IEffect effect, IOffense offense, IDefense defense)
         {
-            return damage.Base * GetModification(damage.Type, defense, offense) * GetBoost(damage, offense);
+            return effect.Damage * System.Math.Sqrt(offense.GetOffense(effect) / (1 + defense.GetDefense(effect)));
         }
-
-        /// <summary>
-        /// extension with damage as this
-        /// </summary>
-        /// <param name="damage"></param>
-        /// <param name="defense"></param>
-        /// <param name="offense"></param>
-        /// <returns></returns>
-        public static double CalculateDamage(this IDamage damage, IDefend defense, IAttack offense) =>
-            defense.CalculateDamage(damage, offense);
-
-        /// <summary>
-        /// extension with offense as this
-        /// </summary>
-        /// <param name="damage"></param>
-        /// <param name="defense"></param>
-        /// <param name="offense"></param>
-        /// <returns></returns>
-        public static double CalculateDamage(this IAttack offense, IDefend defense, IDamage damage) =>
-            defense.CalculateDamage(damage, offense);
     }
+
 }

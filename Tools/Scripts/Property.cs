@@ -4,14 +4,8 @@ using UnityEngine;
 namespace Core.Tools
 {
     [Serializable]
-    public class Property<T>
+    public class Property<T> : Hidden<T>
     {
-        /// <summary>
-        /// backed property
-        /// </summary>
-        [SerializeField]
-        private T _value;
-
         /// <summary>
         /// exposed property
         /// </summary>
@@ -41,5 +35,13 @@ namespace Core.Tools
         {
             _value = value;
         }
+
+        /// <summary>
+        /// access to value implicitly
+        /// </summary>
+        /// <param name="property"></param>
+        public static implicit operator T(Property<T> property) => property.Value;
+
+        public override string ToString() => Value.ToString();
     }
 }

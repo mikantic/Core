@@ -1,5 +1,6 @@
 using System;
 using Unity.VisualScripting;
+using UnityEditor;
 
 namespace Core.Tools
 {
@@ -9,6 +10,7 @@ namespace Core.Tools
     /// <typeparam name="T"></typeparam>
     /// <param name="value"></param>
     public delegate void Ref<T>(ref T value);
+    public delegate void Ref<T1, T2>(ref T1 a, ref T2 b);
 
     public static class Extensions
     {

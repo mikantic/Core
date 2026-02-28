@@ -41,7 +41,7 @@ namespace Core.Tools
     }
 
     /// <summary>
-    /// health value always positive
+    /// double value always positive
     /// </summary>
     public sealed class Magnitude : Minimum<double>
     {

@@ -8,6 +8,6 @@ namespace Core.Flavor
     [Serializable]
     public enum Type
     {
-        Basic, Savory, Spicy, Salty, Sweet, Bitter, Minty, Sour, Rotten
+        None, Savory, Spicy, Salty, Sweet, Bitter, Minty, Sour, Rotten
     }
 }
