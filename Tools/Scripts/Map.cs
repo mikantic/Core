@@ -29,6 +29,8 @@ namespace Core.Tools
             get => Data[key];
             set => Set(key, value);
         }
+
+        public int Count => _value.Count;
     }
 
 
