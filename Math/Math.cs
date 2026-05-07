@@ -44,5 +44,10 @@ namespace Core.Numerics
         {
             return Quaternion.AngleAxis(angle, axis) * vector;
         }
+
+        public static bool InLayerMask(this int layer, LayerMask layerMask)
+        {
+            return (layerMask.value & (1 << layer)) != 0;
+        }
     }
 }
