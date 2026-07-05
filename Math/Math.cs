@@ -35,6 +35,12 @@ namespace Core.Numerics
             return vectors.Aggregate((sum, vector) => sum += vector);
         }
 
+        public static float Maximum(this IEnumerable<float> values, float emptyResult = 0)
+        {
+            if (values.Count() <= 0) return emptyResult;
+            return values.Max();
+        }
+
         public static void Map<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
             foreach (T item in enumerable) action(item);
