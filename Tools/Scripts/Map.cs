@@ -8,6 +8,8 @@ namespace Core.Tools
         public IReadOnlyDictionary<TKey, TValue> Data => _value;
 
         public Func<TValue, bool> Validation;
+        public event Action<TValue> OnRemoved;
+        public event Action<TValue> OnAdded;
 
         public Map()
         {
@@ -16,12 +18,24 @@ namespace Core.Tools
 
         public void Set(TKey key, TValue value)
         {
-            if (_value.ContainsKey(key) || (Validation?.Invoke(value) ?? true)) _value[key] = value;   
+            if (_value.ContainsKey(key))
+            {
+                _value[key] = value;   
+                return;  
+            } 
+
+            if (Validation?.Invoke(value) ?? true) 
+            {
+                _value[key] = value;   
+                OnAdded?.Invoke(value);
+            }
         }
 
         public void Remove(TKey key)
         {
+            if (!_value.TryGetValue(key, out TValue value)) return;
             _value.Remove(key);
+            OnRemoved?.Invoke(value);
         }
 
         public TValue this[TKey key]
